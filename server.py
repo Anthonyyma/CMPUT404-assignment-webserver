@@ -47,6 +47,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
             data = f.read()
             f.close()
             response = "HTTP/1.0 200 OK\n\n" + data
+            # response = "HTTP/1.1 200 OK\nContent-Type: text/css\n\n" + data
+
         except:
             response = "HTTP/1.0 404 NOT FOUND\n\nFile Not Found"
 
