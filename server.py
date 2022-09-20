@@ -26,13 +26,26 @@ import socketserver
 
 # try: curl -v -X GET http://127.0.0.1:8080/
 
+#https://www.codementor.io/@joaojonesventura/building-a-basic-http-server-from-scratch-in-python-1cedkg0842
 
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
         print ("Got a request of: %s\n" % self.data)
-        self.request.sendall(bytearray("OK",'utf-8'))
+
+        headers = self.data.split(b'\n')
+        filename = headers[0].split()[1]
+
+        try:
+            f = open("www" + filename.decode("utf-8"))
+            data = f.read()
+            f.close()
+            response = 'HTTP/1.0 200 OK\n\n' + data
+        except:
+            response = 'HTTP/1.0 404 NOT FOUND\n\nFile Not Found'
+
+        self.request.sendall(response.encode())
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
