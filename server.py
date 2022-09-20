@@ -37,13 +37,18 @@ class MyWebServer(socketserver.BaseRequestHandler):
         headers = self.data.split(b'\n')
         filename = headers[0].split()[1]
 
+        filename = filename.decode("utf-8")
+
+        if filename == "/":
+            filename = "/index.html"
+
         try:
-            f = open("www" + filename.decode("utf-8"))
+            f = open("www" + filename)
             data = f.read()
             f.close()
-            response = 'HTTP/1.0 200 OK\n\n' + data
+            response = "HTTP/1.0 200 OK\n\n" + data
         except:
-            response = 'HTTP/1.0 404 NOT FOUND\n\nFile Not Found'
+            response = "HTTP/1.0 404 NOT FOUND\n\nFile Not Found"
 
         self.request.sendall(response.encode())
 
