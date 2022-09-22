@@ -40,9 +40,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         filename = filename.decode("utf-8")
 
-        if filename == "/":
-            filename = "/index.html"
-
+        if filename[-1] == "/":
+            filename += "index.html"
 
         try:
             f = open("www" + filename)
