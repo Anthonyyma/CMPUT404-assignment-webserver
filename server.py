@@ -43,17 +43,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if filename == "/":
             filename = "/index.html"
 
-        mimeString = mimetypes.guess_type()
 
         try:
             f = open("www" + filename)
             data = f.read()
+            mimeString = mimetypes.guess_type("www" + filename)
+            # print("Here: ", mimeString[0])
             f.close()
-            response = "HTTP/1.1 200 OK\r\n"
-            headers = "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString + "\r\n\r\n" + data
+            response = "HTTP/1.1 200 OK\r\n" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
 
         except:
-            response = "HTTP/1.0 404 NOT FOUND\n\nFile Not Found"
+            response = "HTTP/1.0 404 NOT FOUND\r\nFile Not Found"
 
         self.request.sendall(response.encode())
 
