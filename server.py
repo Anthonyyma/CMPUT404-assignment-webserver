@@ -1,5 +1,6 @@
 #  coding: utf-8 
 import socketserver
+import mimetypes
 
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
@@ -42,12 +43,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if filename == "/":
             filename = "/index.html"
 
+        mimeString = mimetypes.guess_type()
+
         try:
             f = open("www" + filename)
             data = f.read()
             f.close()
-            response = "HTTP/1.0 200 OK\n\n" + data
-            # response = "HTTP/1.1 200 OK\nContent-Type: text/css\n\n" + data
+            response = "HTTP/1.1 200 OK\r\n"
+            headers = "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString + "\r\n\r\n" + data
 
         except:
             response = "HTTP/1.0 404 NOT FOUND\n\nFile Not Found"
