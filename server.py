@@ -16,7 +16,7 @@ import mimetypes
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#
+
 # Furthermore it is derived from the Python documentation examples thus
 # some of the code is Copyright © 2001-2013 Python Software
 # Foundation; All Rights Reserved
@@ -33,26 +33,29 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
+        # print ("Got a request of: %s\n" % self.data)
 
         headers = self.data.split(b'\n')
+        method = headers[0].split()[0]
         filename = headers[0].split()[1]
 
+        method = method.decode("utf-8")
         filename = filename.decode("utf-8")
 
-        if filename[-1] == "/":
-            filename += "index.html"
+        if method == "PUT" and filename[-3:] == "css":
+            response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
+        else:
+            if filename[-1] == "/":
+                filename += "index.html"
+            try:
+                f = open("www" + filename)
+                data = f.read()
+                mimeString = mimetypes.guess_type("www" + filename)
+                f.close()
+                response = "HTTP/1.1 200 OK\r\n" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
 
-        try:
-            f = open("www" + filename)
-            data = f.read()
-            mimeString = mimetypes.guess_type("www" + filename)
-            # print("Here: ", mimeString[0])
-            f.close()
-            response = "HTTP/1.1 200 OK\r\n" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
-
-        except:
-            response = "HTTP/1.0 404 NOT FOUND\r\nFile Not Found"
+            except:
+                response = "HTTP/1.0 404 NOT FOUND\r\nFile Not Found"
 
         self.request.sendall(response.encode())
 
