@@ -42,11 +42,21 @@ class MyWebServer(socketserver.BaseRequestHandler):
         method = method.decode("utf-8")
         filename = filename.decode("utf-8")
 
-        if method == "PUT" and filename[-3:] == "css":
+        if "." in filename[-5:] and method != "GET":
             response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
         else:
-            if filename[-1] == "/":
-                filename += "index.html"
+            # check if it is a folder
+            if "." not in filename[-5:]:
+                # print(filename)
+                if filename[-1] == "/":
+                    print("test0.45")
+                    response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "index.html\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
+                if filename[-1] != "/":
+                    response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "/\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
+                self.request.sendall(response.encode())
+
+            # if filename[-1] == "/":
+            #     filename += "index.html"
             try:
                 f = open("www" + filename)
                 data = f.read()
