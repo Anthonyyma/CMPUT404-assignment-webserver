@@ -45,24 +45,19 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if "." in filename[-5:] and method != "GET":
             response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
         else:
-            # check if it is a folder
-            if "." not in filename[-5:]:
-                # print(filename)
-                if filename[-1] == "/":
-                    print("test0.45")
-                    response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "index.html\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
-                if filename[-1] != "/":
-                    response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "/\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
+            # # check if it is a folder
+            if "." not in filename[-5:] and filename[-1] != "/":
+                response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "/\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
                 self.request.sendall(response.encode())
 
-            # if filename[-1] == "/":
-            #     filename += "index.html"
             try:
+                if filename[-1] == "/":
+                    filename += "index.html"
                 f = open("www" + filename)
                 data = f.read()
                 mimeString = mimetypes.guess_type("www" + filename)
                 f.close()
-                response = "HTTP/1.1 200 OK\r\n" + "Location: " + filename + "/" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
+                response = "HTTP/1.1 200 OK\r\n" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
 
             except:
                 response = "HTTP/1.0 404 NOT FOUND\r\nFile Not Found"
