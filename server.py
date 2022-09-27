@@ -42,10 +42,11 @@ class MyWebServer(socketserver.BaseRequestHandler):
         method = method.decode("utf-8")
         filename = filename.decode("utf-8")
 
+        # if trying to make a request on a file that is not GET
         if "." in filename[-5:] and method != "GET":
             response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
         else:
-            # # check if it is a folder
+            # check if it is a folder
             if "." not in filename[-5:] and filename[-1] != "/":
                 response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "/\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
                 self.request.sendall(response.encode())
@@ -58,7 +59,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 mimeString = mimetypes.guess_type("www" + filename)
                 f.close()
                 response = "HTTP/1.1 200 OK\r\n" + "Host: 127.0.0.1:8080\r\nContent-Type: " + mimeString[0] + "\r\n\r\n" + data
-
             except:
                 response = "HTTP/1.0 404 NOT FOUND\r\nFile Not Found"
 
