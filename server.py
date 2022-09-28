@@ -33,12 +33,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        # print ("Got a request of: %s\n" % self.data)
+        print ("Got a request of: %s\n" % self.data)
 
         headers = self.data.split(b'\n')
         method = headers[0].split()[0]
         filename = headers[0].split()[1]
 
+        # turn the method and filename into string
         method = method.decode("utf-8")
         filename = filename.decode("utf-8")
 
@@ -46,12 +47,12 @@ class MyWebServer(socketserver.BaseRequestHandler):
         if "." in filename[-5:] and method != "GET":
             response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
         else:
-            # check if it is a folder
+            # check if it is a folder and doesn't end with "/", then redirect
             if "." not in filename[-5:] and filename[-1] != "/":
                 response = "HTTP/1.1 301 Permanently Moved\r\n" + "Location: " + filename + "/\r\n" + "Host: 127.0.0.1:8080\r\n\r\n"
                 self.request.sendall(response.encode())
-
             try:
+                # if trying to get root page
                 if filename[-1] == "/":
                     filename += "index.html"
                 f = open("www" + filename)
