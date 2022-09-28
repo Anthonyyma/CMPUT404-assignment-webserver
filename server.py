@@ -44,7 +44,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
         filename = filename.decode("utf-8")
 
         # if trying to make a request on a file that is not GET
-        if "." in filename[-5:] and method != "GET":
+        if method != "GET":
             response = "HTTP/1.0 405 NOT FOUND\r\nFile Not Found"
         else:
             # check if it is a folder and doesn't end with "/", then redirect
